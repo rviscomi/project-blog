@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import clsx from 'clsx';
+import { LayoutGroup, motion } from 'framer-motion';
 
 import { range } from '@/utils';
 import Card from '@/components/Card';
@@ -17,6 +18,7 @@ function DivisionGroupsDemo({
   const [numOfGroups, setNumOfGroups] = React.useState(
     initialNumOfGroups
   );
+  const id = React.useId();
 
   const numOfItemsPerGroup = Math.floor(
     numOfItems / numOfGroups
@@ -39,6 +41,7 @@ function DivisionGroupsDemo({
         };
 
   return (
+    <LayoutGroup>
     <Card as="section" className={styles.wrapper}>
       <header className={styles.header}>
         <SliderControl
@@ -60,11 +63,14 @@ function DivisionGroupsDemo({
           style={gridStructure}
         >
           {range(numOfGroups).map((groupIndex) => (
-            <div key={groupIndex} className={styles.group}>
+            <div
+              key={groupIndex} className={styles.group}>
               {range(numOfItemsPerGroup).map((index) => {
+                const layoutId = `${id}-${groupIndex * numOfItemsPerGroup + index}`;
                 return (
-                  <div
-                    key={index}
+                  <motion.div
+                    layoutId={layoutId}
+                    key={layoutId}
                     className={styles.item}
                   />
                 );
@@ -80,9 +86,11 @@ function DivisionGroupsDemo({
             Remainder Area
           </p>
 
-          {range(remainder).map((index) => {
+          {range(Math.floor(numOfItems - numOfItems % numOfGroups), numOfItems).reverse().map((index) => {
+
+const layoutId = `${id}-${index}`;
             return (
-              <div key={index} className={styles.item} />
+              <motion.div layoutId={layoutId} key={index} className={styles.item} />
             );
           })}
         </div>
@@ -94,7 +102,14 @@ function DivisionGroupsDemo({
         remainder={remainder}
       />
     </Card>
+    </LayoutGroup>
   );
 }
+
+const SPRING = {
+  type: 'spring',
+  stiffness: 200,
+  damping: 40,
+};
 
 export default DivisionGroupsDemo;
